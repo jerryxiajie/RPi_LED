@@ -14,6 +14,8 @@ void readFile(char* basePath)
 	FILE * file_fd;
 	float temp;
 
+	system("cat /sys/bus/w1/devices/28-020592461ab5/w1_slave > w1_slave");
+
 	file_fd = fopen(basePath,"r");
 	if(file_fd == NULL)
 	{
@@ -57,6 +59,8 @@ void readFile(char* basePath)
 		printf("temp = %.1f \n", temp);
 
 		printf(" \n");
+
+		fclose(file_fd);
 	}
 
 
