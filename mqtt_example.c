@@ -138,41 +138,6 @@ int mqtt_client(void)
     char buf[1024];
     int32_t light = 1000, temperature = 1001;
     iotx_shadow_attr_t attr_light, attr_temperature;
-#if 0
-    /* Device AUTH */
-    if (0 != IOT_SetupConnInfo(PRODUCT_KEY, DEVICE_NAME, DEVICE_SECRET, (void **)&pconn_info)) {
-        EXAMPLE_TRACE("AUTH request failed!");
-        return -1;
-    }
-
-    /* Initialize MQTT parameter */
-    memset(&mqtt_params, 0x0, sizeof(mqtt_params));
-    memset(&shadow_params, 0x0, sizeof(iotx_shadow_para_t));
-
-    mqtt_params.port = pconn_info->port;
-    mqtt_params.host = pconn_info->host_name;
-    mqtt_params.client_id = pconn_info->client_id;
-    mqtt_params.username = pconn_info->username;
-    mqtt_params.password = pconn_info->password;
-    mqtt_params.pub_key = pconn_info->pub_key;
-
-    mqtt_params.request_timeout_ms = 2000;
-    mqtt_params.clean_session = 0;
-    mqtt_params.keepalive_interval_ms = 60000;
-    mqtt_params.read_buf_size = MQTT_MSGLEN;
-    mqtt_params.write_buf_size = MQTT_MSGLEN;
-
-    mqtt_params.handle_event.h_fp = event_handle;
-    mqtt_params.handle_event.pcontext = NULL;
-
-    shadow_params.mqtt = mqtt_params;
-
-    h_shadow = IOT_Shadow_Construct(&shadow_params);
-    if (NULL == h_shadow){
-        EXAMPLE_TRACE("Shadow construct failed");
-	return -1;
-    }
-#endif
 
     if (0 != IOT_SetupConnInfo(PRODUCT_KEY, DEVICE_NAME, DEVICE_SECRET, (void **)&puser_info)) {
         EXAMPLE_TRACE("AUTH request failed!");
@@ -244,8 +209,8 @@ int mqtt_client(void)
 
     do {
 
-        IOT_MQTT_Yield(h_shadow, 200);
-
+    //    IOT_MQTT_Yield(h_shadow, 200);
+        IOT_Shadow_Yield(h_shadow, 200);
    	HAL_SleepMs(1000);
 
     } while (1);
