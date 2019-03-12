@@ -9,6 +9,9 @@
 #include "cJSON.h"
 #include "app_entry.h"
 
+#include <stdlib.h>
+
+
 #if defined(OTA_ENABLED) && defined(BUILD_AOS)
     #include "ota_service.h"
 #endif
@@ -92,7 +95,7 @@ static int user_service_request_event_handler(const int devid, const char *servi
         const char *request, const int request_len,
         char **response, int *response_len)
 {
-    int contrastratio = 0, to_cloud = 0;
+    int contrastratio = 0, to_cloud = 0, led_status = 0;
     cJSON *root = NULL, *item_transparency = NULL, *item_from_cloud = NULL;
     EXAMPLE_TRACE("Service Request Received, Devid: %d, Service ID: %.*s, Payload: %s", devid, serviceid_len,
                   serviceid,
@@ -114,7 +117,24 @@ static int user_service_request_event_handler(const int devid, const char *servi
             return -1;
         }
         EXAMPLE_TRACE("transparency: %d", item_transparency->valueint);
-        contrastratio = item_transparency->valueint + 1;
+        
+	led_status = item_transparency->valueint;
+	if(led_status == 1)
+	{
+		system("echo 16 > /sys/class/gpio/export");
+		system("echo out > /sys/class/gpio/gpio16/direction");
+		system("echo 1 > /sys/class/gpio/gpio16/value");
+	}
+	else
+	{
+		
+		system("echo 16 > /sys/class/gpio/export");
+		system("echo out > /sys/class/gpio/gpio16/direction");
+		system("echo 0 > /sys/class/gpio/gpio16/value");
+	}
+
+
+	contrastratio = item_transparency->valueint + 1;
 
         /* Send Service Response To Cloud */
         *response_len = strlen(response_fmt) + 10 + 1;
