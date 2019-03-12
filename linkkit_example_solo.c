@@ -121,15 +121,10 @@ static int user_service_request_event_handler(const int devid, const char *servi
 	led_status = item_transparency->valueint;
 	if(led_status == 1)
 	{
-		system("echo 16 > /sys/class/gpio/export");
-		system("echo out > /sys/class/gpio/gpio16/direction");
 		system("echo 1 > /sys/class/gpio/gpio16/value");
 	}
 	else
 	{
-		
-		system("echo 16 > /sys/class/gpio/export");
-		system("echo out > /sys/class/gpio/gpio16/direction");
 		system("echo 0 > /sys/class/gpio/gpio16/value");
 	}
 
@@ -625,7 +620,8 @@ int linkkit_main(void *paras)
         EXAMPLE_TRACE("IOT_Linkkit_Connect Failed\n");
         return -1;
     }
-
+    system("echo 16 > /sys/class/gpio/export");
+    system("echo out > /sys/class/gpio/gpio16/direction");
 //    time_begin_sec = user_update_sec();
     while (1) {
         IOT_Linkkit_Yield(USER_EXAMPLE_YIELD_TIMEOUT_MS);
