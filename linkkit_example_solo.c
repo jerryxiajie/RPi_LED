@@ -171,8 +171,19 @@ static int user_service_request_event_handler(const int devid, const char *servi
 static int user_property_set_event_handler(const int devid, const char *request, const int request_len)
 {
     int res = 0;
+    cJson *root = NULL, *item_light == NULL;
     user_example_ctx_t *user_example_ctx = user_example_get_ctx();
     EXAMPLE_TRACE("Property Set Received, Devid: %d, Request: %s", devid, request);
+
+    root = cJson_Parse(request);
+    if(root == NULL || !cJson_IsObject(root))
+    {
+	EXAMPLE_TRACE("cJson Parse Error! \n");
+	return -1;
+    }
+
+    item_light = cJson_GetObjectItem(root,"LightSwitch");
+    EXAMPLE_TRACE("LightSwitch : %d \n",item_light->valueint);
 
     res = IOT_Linkkit_Report(user_example_ctx->master_devid, ITM_MSG_POST_PROPERTY,
                              (unsigned char *)request, request_len);
