@@ -185,6 +185,16 @@ static int user_property_set_event_handler(const int devid, const char *request,
     item_light = cJSON_GetObjectItem(root,"LightSwitch");
     EXAMPLE_TRACE("LightSwitch : %d \n",item_light->valueint);
 
+    if(item_light->valueint == 1)
+    {
+	system("echo 1 > /sys/class/gpio/gpio12/value");
+    }
+    else
+    {
+	system("echo 0 > /sys/class/gpio/gpio12/value");
+    }
+
+
     res = IOT_Linkkit_Report(user_example_ctx->master_devid, ITM_MSG_POST_PROPERTY,
                              (unsigned char *)request, request_len);
     EXAMPLE_TRACE("Post Property Message ID: %d", res);
