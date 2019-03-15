@@ -182,18 +182,34 @@ static int user_property_set_event_handler(const int devid, const char *request,
 	return -1;
     }
 
-    item_light = cJSON_GetObjectItem(root,"LightSwitch");
-    EXAMPLE_TRACE("LightSwitch : %d \n",item_light->valueint);
-
-    if(item_light->valueint == 1)
+    item_light = cJSON_GetObjectItem(root,"LightSwitch1");
+    if(item_light == NULL)
     {
-	system("echo 1 > /sys/class/gpio/gpio12/value");
+	EXAMPLE_TRACE("---- No LigthSwitch1 ----");
+	item_light = cJSON_GetObjectItem(root,"LightSwitch2");
+	if(item_light->valueint == 1)
+	{
+        	system("echo 1 > /sys/class/gpio/gpio12/value");
+    	}
+    	else
+    	{
+        	system("echo 0 > /sys/class/gpio/gpio12/value");
+    	}
+
     }
     else
     {
-	system("echo 0 > /sys/class/gpio/gpio12/value");
+	if(item_light->valueint == 1)
+	{
+        	system("echo 1 > /sys/class/gpio/gpio16/value");
+    	}
+    	else
+    	{
+        	system("echo 0 > /sys/class/gpio/gpio16/value");
+    	}
     }
 
+    EXAMPLE_TRACE("LightSwitch : %d \n",item_light->valueint);
 
     res = IOT_Linkkit_Report(user_example_ctx->master_devid, ITM_MSG_POST_PROPERTY,
                              (unsigned char *)request, request_len);
