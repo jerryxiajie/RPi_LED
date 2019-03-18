@@ -442,7 +442,7 @@ static uint64_t user_update_sec(void)
 */
 void user_post_property(void)
 {
-    static int example_index = 0;
+//    static int example_index = 0;
     int res = 0;
     user_example_ctx_t *user_example_ctx = user_example_get_ctx();
     char *property_payload = "NULL";
