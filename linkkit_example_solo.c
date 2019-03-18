@@ -646,8 +646,8 @@ int linkkit_main(void *paras)
 */
         /* Post Proprety Example */
 //        if (time_now_sec % 11 == 0 && user_master_dev_available()) {
-//	user_post_property();
-//	HAL_SleepMs(1000);
+	user_post_property();
+	HAL_SleepMs(10000);
 //        }
         /* Post Event Example */
 //        if (time_now_sec % 17 == 0 && user_master_dev_available()) {
