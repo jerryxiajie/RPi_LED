@@ -447,35 +447,7 @@ void user_post_property(void)
     user_example_ctx_t *user_example_ctx = user_example_get_ctx();
     char *property_payload = "NULL";
 
-    if (example_index == 0) {
-        /* Normal Example */
-        property_payload = "{\"LightSwitch\":1}";
-        example_index++;
-    } else if (example_index == 1) {
-        /* Wrong Property ID */
-        property_payload = "{\"LightSwitchxxxx\":1}";
-        example_index++;
-    } else if (example_index == 2) {
-        /* Wrong Value Format */
-        property_payload = "{\"LightSwitch\":\"test\"}";
-        example_index++;
-    } else if (example_index == 3) {
-        /* Wrong Value Range */
-        property_payload = "{\"LightSwitch\":10}";
-        example_index++;
-    } else if (example_index == 4) {
-        /* Missing Property Item */
-        property_payload = "{\"RGBColor\":{\"Red\":45,\"Green\":30}}";
-        example_index++;
-    } else if (example_index == 5) {
-        /* Wrong Params Format */
-        property_payload = "\"hello world\"";
-        example_index++;
-    } else if (example_index == 6) {
-        /* Wrong Json Format */
-        property_payload = "hello world";
-        example_index = 0;
-    }
+    property_payload = "{\"LightSwitch1\":1}";
 
     res = IOT_Linkkit_Report(user_example_ctx->master_devid, ITM_MSG_POST_PROPERTY,
                              (unsigned char *)property_payload, strlen(property_payload));
@@ -674,7 +646,8 @@ int linkkit_main(void *paras)
 */
         /* Post Proprety Example */
 //        if (time_now_sec % 11 == 0 && user_master_dev_available()) {
-//            user_post_property();
+	user_post_property();
+	HAL_SleepMs(1000);
 //        }
         /* Post Event Example */
 //        if (time_now_sec % 17 == 0 && user_master_dev_available()) {
