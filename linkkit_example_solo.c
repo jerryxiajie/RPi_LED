@@ -530,7 +530,7 @@ void user_post_temp_property(void)
     length = strlen(property_payload)+10+1;
     response = (char *)HAL_Malloc(length);
     if(response ==NULL){
-	return -1;
+	exit(-1);
     }
     memset(response,0,length);
     HAL_Snprintf(response, length, property_payload, temperature);
