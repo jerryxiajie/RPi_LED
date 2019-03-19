@@ -520,10 +520,13 @@ void user_post_temp_property(void)
 {
 //    static int example_index = 0;
     int res = 0;
+    float temperature;
     user_example_ctx_t *user_example_ctx = user_example_get_ctx();
     char *property_payload = "NULL";
 
-    property_payload = "{\"temperature\":23.3}";
+    temperature = get_temperature();
+
+    property_payload = "{\"temperature\":temperature}";
 
     res = IOT_Linkkit_Report(user_example_ctx->master_devid, ITM_MSG_POST_PROPERTY,
                              (unsigned char *)property_payload, strlen(property_payload));
