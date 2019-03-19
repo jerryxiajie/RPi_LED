@@ -465,7 +465,7 @@ float get_temperature(void)
 
 	system("cat /sys/bus/w1/devices/28-020592461ab5/w1_slave > w1_slave");
 
-        file_fd = fopen(basePath,"r");
+        file_fd = fopen(FILE_NAME,"r");
         if(file_fd == NULL)
         {
                 exit(0);
