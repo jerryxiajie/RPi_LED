@@ -535,7 +535,7 @@ void user_post_temp_property(void)
     memset(response,0,length);
     HAL_Snprintf(response, length, property_payload, temperature);
 
-    property_payload = "{\"temperature\": response}";
+    //property_payload = "{\"temperature\": response}";
 
     res = IOT_Linkkit_Report(user_example_ctx->master_devid, ITM_MSG_POST_PROPERTY,
                              (unsigned char *)property_payload, strlen(property_payload));
