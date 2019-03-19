@@ -727,7 +727,7 @@ int linkkit_main(void *paras)
         /* Post Proprety Example */
 //        if (time_now_sec % 11 == 0 && user_master_dev_available()) {
 	user_post_property();
-//	user_post_temp_property();
+	user_post_temp_property();
 	HAL_SleepMs(10000);
 //        }
         /* Post Event Example */
