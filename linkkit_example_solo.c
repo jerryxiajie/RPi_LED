@@ -455,6 +455,22 @@ void user_post_property(void)
     EXAMPLE_TRACE("Post Property Message ID: %d", res);
 }
 
+void user_post_temp_property(void)
+{
+//    static int example_index = 0;
+    int res = 0;
+    user_example_ctx_t *user_example_ctx = user_example_get_ctx();
+    char *property_payload = "NULL";
+
+    property_payload = "{\"temperature\":1}";
+
+    res = IOT_Linkkit_Report(user_example_ctx->master_devid, ITM_MSG_POST_PROPERTY,
+                             (unsigned char *)property_payload, strlen(property_payload));
+
+    EXAMPLE_TRACE("Post Property Message ID: %d", res);
+}
+
+
 void user_post_event(void)
 {
     static int example_index = 0;
@@ -647,6 +663,7 @@ int linkkit_main(void *paras)
         /* Post Proprety Example */
 //        if (time_now_sec % 11 == 0 && user_master_dev_available()) {
 	user_post_property();
+	user_post_temp_property();
 	HAL_SleepMs(10000);
 //        }
         /* Post Event Example */
