@@ -538,7 +538,7 @@ void user_post_temp_property(void)
     //property_payload = "{\"temperature\": response}";
 
     res = IOT_Linkkit_Report(user_example_ctx->master_devid, ITM_MSG_POST_PROPERTY,
-                             (unsigned char *)property_payload, strlen(property_payload));
+                             (unsigned char *)response, strlen(property_payload));
 
     EXAMPLE_TRACE("Post Property Message ID: %d", res);
 }
