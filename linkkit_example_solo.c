@@ -455,6 +455,67 @@ void user_post_property(void)
     EXAMPLE_TRACE("Post Property Message ID: %d", res);
 }
 
+float get_temperature(void)
+{
+	int i,j,read_len,data;
+        FILE * file_fd;
+	char * FILE_NAME = "./w1_slave";
+	unsigned char file_buffer[20];
+        float temp;
+
+	system("cat /sys/bus/w1/devices/28-020592461ab5/w1_slave > w1_slave");
+
+        file_fd = fopen(basePath,"r");
+        if(file_fd == NULL)
+        {
+                exit(0);
+        }
+        else
+        {
+                printf("File open success! \n");
+        }
+
+        fseek(file_fd, -6 , SEEK_END);
+
+        read_len = fread(file_buffer,1,5,file_fd);
+
+        if(read_len == -1)
+        {
+                printf("File Read Error! \n");
+                exit(0);
+        }
+        else
+        {
+                printf("File Read Over! \n");
+
+                printf("Read %d Byte From w1_slave.\n",read_len);
+
+                temp=0;
+                data=0;
+
+                for(i=0; i<read_len; i++)
+                {
+                        printf("file_buffer[%d] = %c,%d\n", i,file_buffer[i],file_buffer[i]);
+                        data = file_buffer[i]-48;
+                        for(j=0; j<4-i; j++)
+                        {
+                                data*=10;
+                        }
+                        temp+=data;
+                }
+                temp/=1000;
+
+                printf("temp = %.1f \n", temp);
+
+                printf(" \n");
+
+                fclose(file_fd);
+        }
+
+	return temp;
+
+}
+
 void user_post_temp_property(void)
 {
 //    static int example_index = 0;
@@ -462,7 +523,7 @@ void user_post_temp_property(void)
     user_example_ctx_t *user_example_ctx = user_example_get_ctx();
     char *property_payload = "NULL";
 
-    property_payload = "{\"temperature\":1}";
+    property_payload = "{\"temperature\":23.3}";
 
     res = IOT_Linkkit_Report(user_example_ctx->master_devid, ITM_MSG_POST_PROPERTY,
                              (unsigned char *)property_payload, strlen(property_payload));
@@ -663,7 +724,7 @@ int linkkit_main(void *paras)
         /* Post Proprety Example */
 //        if (time_now_sec % 11 == 0 && user_master_dev_available()) {
 	user_post_property();
-	user_post_temp_property();
+//	user_post_temp_property();
 	HAL_SleepMs(10000);
 //        }
         /* Post Event Example */
