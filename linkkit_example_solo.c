@@ -521,12 +521,21 @@ void user_post_temp_property(void)
 //    static int example_index = 0;
     int res = 0;
     float temperature;
+    char * response;
+    int length;
     user_example_ctx_t *user_example_ctx = user_example_get_ctx();
-    char *property_payload = "NULL";
+    char *property_payload = "{\"temperature\":%f}";
 
     temperature = get_temperature();
+    length = strlen(property_payload)+10+1;
+    response = (char *)HAL_Malloc(length);
+    if(response ==NULL){
+	return -1;
+    }
+    memset(response,0,length);
+    HAL_Snprintf(response, length, property_payload, temperature);
 
-    property_payload = "{\"temperature\":temperature}";
+    property_payload = "{\"temperature\": response}";
 
     res = IOT_Linkkit_Report(user_example_ctx->master_devid, ITM_MSG_POST_PROPERTY,
                              (unsigned char *)property_payload, strlen(property_payload));
