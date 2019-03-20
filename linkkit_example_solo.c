@@ -527,7 +527,7 @@ void user_post_temp_property(void)
     char *property_payload = "{\"temperature\":%f}";
 
     temperature = get_temperature();
-    length = strlen(property_payload)+sizeof(float)+30;
+    length = strlen(property_payload)+sizeof(float)+1;
     response = (char *)HAL_Malloc(length);
     if(response ==NULL){
 	exit(-1);
@@ -538,7 +538,7 @@ void user_post_temp_property(void)
     //property_payload = "{\"temperature\": response}";
 
     res = IOT_Linkkit_Report(user_example_ctx->master_devid, ITM_MSG_POST_PROPERTY,
-                             (unsigned char *)response, strlen(property_payload));
+                             (unsigned char *)response, length);
 
     EXAMPLE_TRACE("Post Property Message ID: %d", res);
 }
