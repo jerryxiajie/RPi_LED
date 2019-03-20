@@ -190,10 +190,12 @@ static int user_property_set_event_handler(const int devid, const char *request,
 	if(item_light->valueint == 1)
 	{
         	system("echo 1 > /sys/class/gpio/gpio12/value");
+		user_post_property(2,1);
     	}
     	else
     	{
         	system("echo 0 > /sys/class/gpio/gpio12/value");
+		user_post_property(2,0);
     	}
 
     }
@@ -202,10 +204,12 @@ static int user_property_set_event_handler(const int devid, const char *request,
 	if(item_light->valueint == 1)
 	{
         	system("echo 1 > /sys/class/gpio/gpio16/value");
+		user_post_property(1,1);
     	}
     	else
     	{
         	system("echo 0 > /sys/class/gpio/gpio16/value");
+		user_post_property(1,0);
     	}
     }
 
@@ -745,8 +749,8 @@ int linkkit_main(void *paras)
         IOT_Linkkit_Yield(USER_EXAMPLE_YIELD_TIMEOUT_MS);
 
 //	user_post_property();
-//	user_post_temp_property();
-//	HAL_SleepMs(10000);
+	user_post_temp_property();
+	HAL_SleepMs(10000);
 
     }
 
