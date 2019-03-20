@@ -524,10 +524,10 @@ void user_post_temp_property(void)
     char * response;
     int length;
     user_example_ctx_t *user_example_ctx = user_example_get_ctx();
-    char *property_payload = "{\"temperature\":%f }";
+    char *property_payload = "{\"temperature\":%.1f}";
 
     temperature = get_temperature();
-    length = strlen(property_payload)+sizeof(float);
+    length = strlen(property_payload)+sizeof(float)+1;
     response = (char *)HAL_Malloc(length);
     if(response ==NULL){
 	exit(-1);
