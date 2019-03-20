@@ -739,7 +739,9 @@ int linkkit_main(void *paras)
     if (res < 0) {
         EXAMPLE_TRACE("IOT_Linkkit_Connect Failed\n");
         return -1;
-    }
+    }    
+    user_post_property(1,0);
+    user_post_property(2,0);
 //    system("echo 16 > /sys/class/gpio/export");
 //    system("echo out > /sys/class/gpio/gpio16/direction");
 //    time_begin_sec = user_update_sec();
