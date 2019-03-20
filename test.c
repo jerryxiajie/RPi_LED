@@ -10,59 +10,33 @@ unsigned char file_buffer[20];
 
 void readFile(char* basePath)
 {
-	int i,j,read_len,data;
-	FILE * file_fd;
-	float temp;
+	int read_len;
+        FILE * file_fd;
+        char * FILE_NAME = "sys/bus/w1/devices/28-020592461ab5/w1_slave";
+        unsigned char file_buffer[60];
+        float temp;
 
-	system("cat /sys/bus/w1/devices/28-020592461ab5/w1_slave > w1_slave");
+        file_fd = fopen(FILE_NAME,"r");
+        if(file_fd == NULL)
+        {
+                printf("File open failed! \n");
+                exit(0);
+        }
+        else
+        {
+                printf("File open success! \n");
+        }
 
-	file_fd = fopen(basePath,"r");
-	if(file_fd == NULL)
-	{
-		exit(0);
-	}
-	else
-	{
-		printf("File open success! \n");
-	}
+        fseek(file_fd,0L,SEEK_END);
+        read_len=ftell(file_fd);
+        fseek(file_fd,0L,SEEK_SET);
+        fread(file_buffer,read_len,1,file_fd);
+        file_buffer[read_len]=0;
 
-	fseek(file_fd, -6 , SEEK_END);
-	
-	read_len = fread(file_buffer,1,5,file_fd);
-	
-	if(read_len == -1)
-	{
-		printf("File Read Error! \n");
-		exit(0);
-	}
-	else
-	{
-		printf("File Read Over! \n");
+        temp = atof(file_buffer);
 
-		printf("Read %d Byte From w1_slave.\n",read_len);
-
-		temp=0;
-		data=0;
-
-		for(i=0; i<read_len; i++)
-		{
-			printf("file_buffer[%d] = %c,%d\n", i,file_buffer[i],file_buffer[i]);
-			data = file_buffer[i]-48;
-			for(j=0; j<4-i; j++)
-			{
-				data*=10;
-			}
-			temp+=data;
-		}
-		temp/=1000;
-
-		printf("temp = %.1f \n", temp);
-
-		printf(" \n");
-
-		fclose(file_fd);
-	}
-
+	fclose(file_fd);
+        return temp;
 
 }
 
