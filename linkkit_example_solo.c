@@ -537,6 +537,8 @@ void user_post_temp_property(void)
     
     printf("\n length = %d payload_lenght = %d  float_length = %d \n",length,strlen(property_payload),sizeof(float));
     printf("\n response = %s \n",response);
+    
+    printf("\n response_length = %d \n",strlen(response));
 
     //property_payload = "{\"temperature\": response}";
 
