@@ -534,6 +534,8 @@ void user_post_temp_property(void)
     }
     memset(response,0,length);
     HAL_Snprintf(response, length, property_payload, temperature);
+    printf("\n length = %d \n",length);
+    printf("\n response = %s \n",response);
 
     //property_payload = "{\"temperature\": response}";
 
