@@ -10,13 +10,13 @@ unsigned char file_buffer[20];
 
 float readFile(void)
 {
-	int read_len;
+	int i,read_len;
         FILE * file_fd;
         char * FILE_NAME = "sys/bus/w1/devices/28-020592461ab5/w1_slave";
-        unsigned char file_buffer[60];
+        unsigned char file_buffer[128];
         float temp;
 
-        file_fd = fopen(FILE_NAME,"r");
+        file_fd = fopen(FILE_NAME,O_RDONLY);
         if(file_fd == NULL)
         {
                 printf("File open failed! \n");
@@ -31,14 +31,14 @@ float readFile(void)
         read_len=ftell(file_fd);
         fseek(file_fd,0L,SEEK_SET);
         fread(file_buffer,read_len,1,file_fd);
+        fclose(file_fd);
         file_buffer[read_len]=0;
+        i = 0;
+        while(file_buffer[i++]  != 't');
+        temp = atof(&file_buffer[i+1]);
+	printf("temp = %f \n",temp);
 
-        temp = atof(file_buffer);
-
-	printf("temp = %f ",temp);
-	fclose(file_fd);
-        return temp;
-
+	return temp/1000;
 }
 
 int main(void)

@@ -508,16 +508,11 @@ float get_temperature(void)
         }
         else
         {
-                printf("File Read Over! \n");
-
-                printf("Read %d Byte From w1_slave.\n",read_len);
-
                 temp=0;
                 data=0;
 
                 for(i=0; i<read_len; i++)
                 {
-                        printf("file_buffer[%d] = %c,%d\n", i,file_buffer[i],file_buffer[i]);
                         data = file_buffer[i]-48;
                         for(j=0; j<4-i; j++)
                         {
