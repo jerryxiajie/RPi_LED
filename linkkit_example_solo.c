@@ -479,10 +479,10 @@ void user_post_property(int id, int status)
 
 float get_temperature(void)
 {
-	int i,read_len;
+	int i;
         FILE * file_fd;
         char * FILE_NAME = "/sys/bus/w1/devices/28-020592461ab5/w1_slave";
-        unsigned char file_buffer[256];
+        char file_buffer[256];
         float temp;
 
         file_fd = fopen(FILE_NAME,"r");
