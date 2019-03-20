@@ -543,7 +543,8 @@ void user_post_temp_property(void)
     user_example_ctx_t *user_example_ctx = user_example_get_ctx();
     char *property_payload = "{\"temperature\":%.1f}";
 
-    temperature = get_temperature();
+    //temperature = get_temperature();
+    temperature = 22.8;
     length = strlen(property_payload)+sizeof(float)+1;
     response = (char *)HAL_Malloc(length);
     if(response ==NULL){
@@ -552,9 +553,9 @@ void user_post_temp_property(void)
     memset(response,0,length);
     HAL_Snprintf(response, length, property_payload, temperature);
     
-    printf("\n length = %d payload_lenght = %d  float_length = %d \n",length,strlen(property_payload),sizeof(float));
-    printf("\n response = %s \n",response); 
-    printf("\n response_length = %d \n",strlen(response));
+//    printf("\n length = %d payload_lenght = %d  float_length = %d \n",length,strlen(property_payload),sizeof(float));
+//    printf("\n response = %s \n",response); 
+//    printf("\n response_length = %d \n",strlen(response));
 
     //property_payload = "{\"temperature\": response}";
 
