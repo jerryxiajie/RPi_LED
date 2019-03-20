@@ -38,6 +38,8 @@
         HAL_Printf("\033[0m\r\n");                                   \
     } while (0)
 
+void user_post_property(int id, int status);
+
 typedef struct {
     int master_devid;
     int cloud_connected;
@@ -190,12 +192,12 @@ static int user_property_set_event_handler(const int devid, const char *request,
 	if(item_light->valueint == 1)
 	{
         	system("echo 1 > /sys/class/gpio/gpio12/value");
-	//	user_post_property(2,1);
+		user_post_property(2,1);
     	}
     	else
     	{
         	system("echo 0 > /sys/class/gpio/gpio12/value");
-	//	user_post_property(2,0);
+		user_post_property(2,0);
     	}
 
     }
@@ -204,12 +206,12 @@ static int user_property_set_event_handler(const int devid, const char *request,
 	if(item_light->valueint == 1)
 	{
         	system("echo 1 > /sys/class/gpio/gpio16/value");
-	//	user_post_property(1,1);
+		user_post_property(1,1);
     	}
     	else
     	{
         	system("echo 0 > /sys/class/gpio/gpio16/value");
-	//	user_post_property(1,0);
+		user_post_property(1,0);
     	}
     }
 
