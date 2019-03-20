@@ -440,14 +440,30 @@ static uint64_t user_update_sec(void)
     return (HAL_UptimeMs() - time_start_ms) / 1000;
 }
 */
-void user_post_property(void)
+void user_post_property(int id, int status)
 {
 //    static int example_index = 0;
     int res = 0;
     user_example_ctx_t *user_example_ctx = user_example_get_ctx();
     char *property_payload = "NULL";
 
-    property_payload = "{\"LightSwitch1\":1}";
+    if(id == 1)
+    {
+	if(status == 1)
+		property_payload = "{\"LightSwitch1\":1}";
+	else
+		property_payload = "{\"LightSwitch1\":0}";
+
+    }
+    else
+    {
+	if(status == 1)
+		property_payload = "{\"LightSwitch2\":1}";
+	else
+		property_payload = "{\"LightSwitch2\":0}";
+    }
+
+    //property_payload = "{\"LightSwitch1\":1}";
 
     res = IOT_Linkkit_Report(user_example_ctx->master_devid, ITM_MSG_POST_PROPERTY,
                              (unsigned char *)property_payload, strlen(property_payload));
@@ -728,42 +744,10 @@ int linkkit_main(void *paras)
     while (1) {
         IOT_Linkkit_Yield(USER_EXAMPLE_YIELD_TIMEOUT_MS);
 
-/*        time_now_sec = user_update_sec();
-        if (time_prev_sec == time_now_sec) {
-            continue;
-        }
-        if (max_running_seconds && (time_now_sec - time_begin_sec > max_running_seconds)) {
-            EXAMPLE_TRACE("Example Run for Over %d Seconds, Break Loop!\n", max_running_seconds);
-            break;
-        }
-*/
-        /* Post Proprety Example */
-//        if (time_now_sec % 11 == 0 && user_master_dev_available()) {
-	user_post_property();
-	user_post_temp_property();
-	HAL_SleepMs(10000);
-//        }
-        /* Post Event Example */
-//        if (time_now_sec % 17 == 0 && user_master_dev_available()) {
-//            user_post_event();
-//        }
+//	user_post_property();
+//	user_post_temp_property();
+//	HAL_SleepMs(10000);
 
-        /* Device Info Update Example */
-//        if (time_now_sec % 23 == 0 && user_master_dev_available()) {
-//            user_deviceinfo_update();
-//        }
-
-        /* Device Info Delete Example */
-//        if (time_now_sec % 29 == 0 && user_master_dev_available()) {
-//            user_deviceinfo_delete();
-//        }
-
-        /* Post Raw Example */
-//        if (time_now_sec % 37 == 0 && user_master_dev_available()) {
-//            user_post_raw_data();
-//        }
-
-//        time_prev_sec = time_now_sec;
     }
 
     IOT_Linkkit_Close(user_example_ctx->master_devid);
