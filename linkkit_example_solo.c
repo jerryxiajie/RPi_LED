@@ -543,8 +543,8 @@ void user_post_temp_property(void)
     user_example_ctx_t *user_example_ctx = user_example_get_ctx();
     char *property_payload = "{\"temperature\":%.1f}";
 
-    //temperature = get_temperature();
-    temperature = 22.8;
+    temperature = get_temperature();
+//    temperature = 22.8;
     length = strlen(property_payload)+sizeof(float)+1;
     response = (char *)HAL_Malloc(length);
     if(response ==NULL){
@@ -741,7 +741,9 @@ int linkkit_main(void *paras)
         return -1;
     }    
     user_post_property(1,0);
+    IOT_Linkkit_Yield(USER_EXAMPLE_YIELD_TIMEOUT_MS);
     user_post_property(2,0);
+    IOT_Linkkit_Yield(USER_EXAMPLE_YIELD_TIMEOUT_MS);
 //    system("echo 16 > /sys/class/gpio/export");
 //    system("echo out > /sys/class/gpio/gpio16/direction");
 //    time_begin_sec = user_update_sec();
