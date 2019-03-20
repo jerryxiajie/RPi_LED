@@ -527,7 +527,7 @@ void user_post_temp_property(void)
     char *property_payload = "{\"temperature\":%f}";
 
     temperature = get_temperature();
-    length = strlen(property_payload)+sizeof(temperature)+1;
+    length = strlen(property_payload)+sizeof(temperature)+10;
     response = (char *)HAL_Malloc(length);
     if(response ==NULL){
 	exit(-1);
