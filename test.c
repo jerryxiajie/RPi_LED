@@ -8,7 +8,7 @@ char * FILE_NAME = "./w1_slave";
 unsigned char file_buffer[20];
 
 
-void readFile(char* basePath)
+float readFile(void)
 {
 	int read_len;
         FILE * file_fd;
@@ -35,6 +35,7 @@ void readFile(char* basePath)
 
         temp = atof(file_buffer);
 
+	printf("temp = %f ",temp);
 	fclose(file_fd);
         return temp;
 
@@ -42,7 +43,7 @@ void readFile(char* basePath)
 
 int main(void)
 {
-	readFile(FILE_NAME);	
+	readFile();	
 
 	return 0;
 }
