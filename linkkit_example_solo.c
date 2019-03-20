@@ -479,17 +479,16 @@ void user_post_property(int id, int status)
 
 float get_temperature(void)
 {
-	int i,j,read_len,data;
+	int i,read_len;
         FILE * file_fd;
-	char * FILE_NAME = "./w1_slave";
-	unsigned char file_buffer[20];
+        char * FILE_NAME = "/sys/bus/w1/devices/28-020592461ab5/w1_slave";
+        unsigned char file_buffer[256];
         float temp;
-
-	system("cat /sys/bus/w1/devices/28-020592461ab5/w1_slave > w1_slave");
 
         file_fd = fopen(FILE_NAME,"r");
         if(file_fd == NULL)
         {
+                printf("File open failed! \n");
                 exit(0);
         }
         else
@@ -497,45 +496,18 @@ float get_temperature(void)
                 printf("File open success! \n");
         }
 
-        fseek(file_fd, -6 , SEEK_END);
+        fread(file_buffer,128,1,file_fd);
+        fclose(file_fd);
+        i = 0;
+        while(file_buffer[i++]  != 't');
+        temp = atof(&file_buffer[i+1]);
 
-        read_len = fread(file_buffer,1,5,file_fd);
-
-        if(read_len == -1)
-        {
-                printf("File Read Error! \n");
-                exit(0);
-        }
-        else
-        {
-                temp=0;
-                data=0;
-
-                for(i=0; i<read_len; i++)
-                {
-                        data = file_buffer[i]-48;
-                        for(j=0; j<4-i; j++)
-                        {
-                                data*=10;
-                        }
-                        temp+=data;
-                }
-                temp/=1000;
-
-                printf("temp = %.1f \n", temp);
-
-                printf(" \n");
-
-                fclose(file_fd);
-        }
-
-	return temp;
+        return temp/1000; 
 
 }
 
 void user_post_temp_property(void)
 {
-//    static int example_index = 0;
     int res = 0;
     float temperature;
     char * response;
@@ -544,7 +516,6 @@ void user_post_temp_property(void)
     char *property_payload = "{\"temperature\":%.1f}";
 
     temperature = get_temperature();
-//    temperature = 22.8;
     length = strlen(property_payload)+sizeof(float)+1;
     response = (char *)HAL_Malloc(length);
     if(response ==NULL){
