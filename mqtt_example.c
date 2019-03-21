@@ -150,7 +150,7 @@ int mqtt_client(void)
     iotx_shadow_para_t shadow_para;
     char buf[1024];
     int32_t LightSwitch1 = 0, LightSwitch2 = 0, temperature = 0;
-    iotx_shadow_attr_t attr_light, attr_temperature;
+    iotx_shadow_attr_t attr_lightswitch1, attr_lightswitch2, attr_temperature;
 
     if (0 != IOT_SetupConnInfo(PRODUCT_KEY, DEVICE_NAME, DEVICE_SECRET, (void **)&puser_info)) {
         EXAMPLE_TRACE("AUTH request failed!");
@@ -187,14 +187,14 @@ int mqtt_client(void)
     attr_lightswitch1.mode = IOTX_SHADOW_RW;
     attr_lightswitch1.pattr_name = "switch1";
     attr_lightswitch1.pattr_data = &LightSwitch1;
-    attr_lightswitch1.attr_type = INT32;
+    attr_lightswitch1.attr_type = IOTX_SHADOW_INT32;
     attr_lightswitch1.callback = _device_shadow_cb_light1;
 
     attr_lightswitch2.attr_type = IOTX_SHADOW_INT32;
     attr_lightswitch2.mode = IOTX_SHADOW_RW;
     attr_lightswitch2.pattr_name = "switch2";
     attr_lightswitch2.pattr_data = &LightSwitch2;
-    attr_lightswitch1.attr_type = INT32;
+    attr_lightswitch1.attr_type = IOTX_SHADOW_INT32;
     attr_lightswitch2.callback = _device_shadow_cb_light2;
 
     /* Initialize the @temperature attribute */
@@ -202,7 +202,7 @@ int mqtt_client(void)
     attr_temperature.mode = IOTX_SHADOW_READONLY;
     attr_temperature.pattr_name = "temperature";
     attr_temperature.pattr_data = &temperature;
-    attr_lightswitch1.attr_type = INT32;
+    attr_lightswitch1.attr_type = IOTX_SHADOW_INT32;
     attr_temperature.callback = NULL;
 
     /* Register the attribute */
