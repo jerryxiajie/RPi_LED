@@ -13,10 +13,10 @@
 
 #include "exports/iot_export_shadow.h"
 
-#define PRODUCT_KEY             "a1N5xNkQIvp"
-#define PRODUCT_SECRET          "p02hhgz4QFoWenqz"
-#define DEVICE_NAME             "My_Light"
-#define DEVICE_SECRET           "uW9yzZOQtNi1TNB7gLcQOHAqA8vfUt5E"
+#define PRODUCT_KEY      "a1A83PCMVng"
+#define PRODUCT_SECRET   "DXxguDoumhnH5tYO"
+#define DEVICE_NAME      "ali_test"
+#define DEVICE_SECRET    "nAHRe1LAY1rLE51fLbccbYNHQBfKtpJF"
 
 
 // #define PRODUCT_KEY             "a1DW8sdFeno"
