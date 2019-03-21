@@ -722,8 +722,8 @@ int linkkit_main(void *paras)
         IOT_Linkkit_Yield(USER_EXAMPLE_YIELD_TIMEOUT_MS);
 
 //	user_post_property();
-	user_post_temp_property();
-	HAL_SleepMs(10000);
+//	user_post_temp_property();
+//	HAL_SleepMs(10000);
 
     }
 
