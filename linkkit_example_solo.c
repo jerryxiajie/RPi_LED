@@ -435,7 +435,7 @@ static int user_cota_event_handler(int type, const char *config_id, int config_s
     return 0;
 }
 
-static uint64_t user_update_sec(void)
+/*static uint64_t user_update_sec(void)
 {
     static uint64_t time_start_ms = 0;
 
@@ -445,7 +445,7 @@ static uint64_t user_update_sec(void)
 
     return (HAL_UptimeMs() - time_start_ms) / 1000;
 }
-
+*/
 void user_post_property(int id, int status)
 {
 //    static int example_index = 0;
