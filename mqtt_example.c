@@ -115,7 +115,20 @@ void event_handle(void *pcontext, void *pclient, iotx_mqtt_event_msg_pt msg)
     }
 }
 
-static void _device_shadow_cb_light(iotx_shadow_attr_pt pattr)
+static void _device_shadow_cb_light1(iotx_shadow_attr_pt pattr)
+{
+
+    /*
+     * ****** Your Code ******
+     */
+
+    EXAMPLE_TRACE("----");
+    EXAMPLE_TRACE("Attrbute Name: '%s'", pattr->pattr_name);
+    EXAMPLE_TRACE("Attrbute Value: %d", *(int32_t *)pattr->pattr_data);
+    EXAMPLE_TRACE("----");
+}
+
+static void _device_shadow_cb_light2(iotx_shadow_attr_pt pattr)
 {
 
     /*
@@ -136,7 +149,7 @@ int mqtt_client(void)
 //    iotx_mqtt_param_t mqtt_params;
     iotx_shadow_para_t shadow_para;
     char buf[1024];
-    int32_t light = 1000, temperature = 1001;
+    int32_t LightSwitch1 = 0, LightSwitch2 = 0, temperature = 0;
     iotx_shadow_attr_t attr_light, attr_temperature;
 
     if (0 != IOT_SetupConnInfo(PRODUCT_KEY, DEVICE_NAME, DEVICE_SECRET, (void **)&puser_info)) {
@@ -165,30 +178,38 @@ int mqtt_client(void)
 
     h_shadow = IOT_Shadow_Construct(&shadow_para);
 
-    memset(&attr_light, 0, sizeof(iotx_shadow_attr_t));
+ 	memset(&attr_lightswitch1, 0, sizeof(iotx_shadow_attr_t));
+    memset(&attr_lightswitch2, 0, sizeof(iotx_shadow_attr_t));
     memset(&attr_temperature, 0, sizeof(iotx_shadow_attr_t));
 
+    /* Initialize the @lightswitch1 attribute */
+    attr_lightswitch1.attr_type = IOTX_SHADOW_INT32;
+    attr_lightswitch1.mode = IOTX_SHADOW_RW;
+    attr_lightswitch1.pattr_name = "switch1";
+    attr_lightswitch1.pattr_data = &LightSwitch1;
+    attr_lightswitch1.attr_type = INT32;
+    attr_lightswitch1.callback = _device_shadow_cb_light1;
 
-    printf("\n  ----------------- Jerry Test ------------------  \n");
-
-    /* Initialize the @light attribute */
-    attr_light.attr_type = IOTX_SHADOW_INT32;
-    attr_light.mode = IOTX_SHADOW_RW;
-    attr_light.pattr_name = "switch";
-    attr_light.pattr_data = &light;
-    attr_light.callback = _device_shadow_cb_light;
+    attr_lightswitch2.attr_type = IOTX_SHADOW_INT32;
+    attr_lightswitch2.mode = IOTX_SHADOW_RW;
+    attr_lightswitch2.pattr_name = "switch2";
+    attr_lightswitch2.pattr_data = &LightSwitch2;
+    attr_lightswitch1.attr_type = INT32;
+    attr_lightswitch2.callback = _device_shadow_cb_light2;
 
     /* Initialize the @temperature attribute */
     attr_temperature.attr_type = IOTX_SHADOW_INT32;
     attr_temperature.mode = IOTX_SHADOW_READONLY;
     attr_temperature.pattr_name = "temperature";
     attr_temperature.pattr_data = &temperature;
+    attr_lightswitch1.attr_type = INT32;
     attr_temperature.callback = NULL;
 
     /* Register the attribute */
     /* Note that you must register the attribute you want to synchronize with cloud
      * before calling IOT_Shadow_Pull() */
-    IOT_Shadow_RegisterAttribute(h_shadow, &attr_light);
+    IOT_Shadow_RegisterAttribute(h_shadow, &attr_lightswitch1);
+    IOT_Shadow_RegisterAttribute(h_shadow, &attr_lightswitch2);
     IOT_Shadow_RegisterAttribute(h_shadow, &attr_temperature);
 
     /* synchronize the device shadow with device shadow cloud */
@@ -199,25 +220,27 @@ int mqtt_client(void)
     /* Format the attribute data */
     IOT_Shadow_PushFormat_Init(h_shadow, &format, buf, 1024);
     IOT_Shadow_PushFormat_Add(h_shadow, &format, &attr_temperature);
-    IOT_Shadow_PushFormat_Add(h_shadow, &format, &attr_light);
+    IOT_Shadow_PushFormat_Add(h_shadow, &format, &attr_lightswitch1);
+    IOT_Shadow_PushFormat_Add(h_shadow, &format, &attr_lightswitch2);
     IOT_Shadow_PushFormat_Finalize(h_shadow, &format);
 
     /* Update attribute data */
     IOT_Shadow_Push(h_shadow, format.buf, format.offset, 10);
 
-    HAL_SleepMs(1000);
+ //   HAL_SleepMs(1000);
 
     do {
 
     //    IOT_MQTT_Yield(h_shadow, 200);
         IOT_Shadow_Yield(h_shadow, 200);
-   	HAL_SleepMs(1000);
+   		HAL_SleepMs(1000);
 
     } while (1);
 
     /* Delete the two attributes */
     IOT_Shadow_DeleteAttribute(h_shadow, &attr_temperature);
-    IOT_Shadow_DeleteAttribute(h_shadow, &attr_light);
+    IOT_Shadow_DeleteAttribute(h_shadow, &attr_lightswitch1);
+    IOT_Shadow_DeleteAttribute(h_shadow, &attr_lightswitch2);
 
     IOT_Shadow_Destroy(h_shadow);
 
