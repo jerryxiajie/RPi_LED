@@ -192,12 +192,12 @@ static int user_property_set_event_handler(const int devid, const char *request,
 	if(item_light->valueint == 1)
 	{
         	system("echo 1 > /sys/class/gpio/gpio12/value");
-	//	user_post_property(2,1);
+		user_post_property(2,1);
     	}
     	else
     	{
         	system("echo 0 > /sys/class/gpio/gpio12/value");
-	//	user_post_property(2,0);
+		user_post_property(2,0);
     	}
 
     }
@@ -206,12 +206,12 @@ static int user_property_set_event_handler(const int devid, const char *request,
 	if(item_light->valueint == 1)
 	{
         	system("echo 1 > /sys/class/gpio/gpio16/value");
-	//	user_post_property(1,1);
+		user_post_property(1,1);
     	}
     	else
     	{
         	system("echo 0 > /sys/class/gpio/gpio16/value");
-	//	user_post_property(1,0);
+		user_post_property(1,0);
     	}
     }
 
@@ -434,7 +434,7 @@ static int user_cota_event_handler(int type, const char *config_id, int config_s
 
     return 0;
 }
-/*
+
 static uint64_t user_update_sec(void)
 {
     static uint64_t time_start_ms = 0;
@@ -445,7 +445,7 @@ static uint64_t user_update_sec(void)
 
     return (HAL_UptimeMs() - time_start_ms) / 1000;
 }
-*/
+
 void user_post_property(int id, int status)
 {
 //    static int example_index = 0;
@@ -637,6 +637,7 @@ int linkkit_main(void *paras)
 //    uint64_t                        time_prev_sec = 0, time_now_sec = 0;
 //    uint64_t                        time_begin_sec = 0;
     int                             res = 0;
+    int cnt = 0;
     iotx_linkkit_dev_meta_info_t    master_meta_info;
     user_example_ctx_t             *user_example_ctx = user_example_get_ctx();
 #if defined(__UBUNTU_SDK_DEMO__)
@@ -723,7 +724,13 @@ int linkkit_main(void *paras)
 
 //	user_post_property();
 //	user_post_temp_property();
-//	HAL_SleepMs(10000);
+	HAL_SleepMs(10);
+	cnt++;
+	if(cnt == 1000)
+	{
+		user_post_temp_property();
+		cnt = 0;
+	}
 
     }
 
