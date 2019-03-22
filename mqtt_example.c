@@ -141,6 +141,20 @@ static void _device_shadow_cb_light2(iotx_shadow_attr_pt pattr)
     EXAMPLE_TRACE("----");
 }
 
+static void _device_shadow_cb_light(iotx_shadow_attr_pt pattr)
+{
+
+    /*
+     * ****** Your Code ******
+     */
+
+    EXAMPLE_TRACE("----");
+    EXAMPLE_TRACE("Attrbute Name: '%s'", pattr->pattr_name);
+    EXAMPLE_TRACE("Attrbute Value: %d", *(int32_t *)pattr->pattr_data);
+    EXAMPLE_TRACE("----");
+}
+
+
 
 int mqtt_client(void)
 {
@@ -149,7 +163,7 @@ int mqtt_client(void)
 //    iotx_mqtt_param_t mqtt_params;
     iotx_shadow_para_t shadow_para;
     char buf[1024];
-    int32_t LightSwitch1 = 0, LightSwitch2 = 0, temperature = 0, switchs = 0;
+    int32_t LightSwitch1 = 0, LightSwitch2 = 0, temperature = 0, light = 0;
     iotx_shadow_attr_t attr_lightswitch1, attr_lightswitch2, attr_temperature, attr_switch;
 
     if (0 != IOT_SetupConnInfo(PRODUCT_KEY, DEVICE_NAME, DEVICE_SECRET, (void **)&puser_info)) {
@@ -195,9 +209,9 @@ int mqtt_client(void)
     attr_switch.attr_type = IOTX_SHADOW_INT32;
     attr_switch.mode = IOTX_SHADOW_RW;
     attr_switch.pattr_name = "switch";
-    attr_switch.pattr_data = &switchs;
+    attr_switch.pattr_data = &light;
     attr_switch.attr_type = IOTX_SHADOW_INT32;
-    attr_switch.callback = NULL;
+    attr_switch.callback = _device_shadow_cb_light;
 
 
     attr_lightswitch2.attr_type = IOTX_SHADOW_INT32;
@@ -212,7 +226,7 @@ int mqtt_client(void)
     attr_temperature.mode = IOTX_SHADOW_READONLY;
     attr_temperature.pattr_name = "temperature";
     attr_temperature.pattr_data = &temperature;
-    attr_temperature.attr_type = IOTX_SHADOW_INT32;
+//    attr_temperature.attr_type = IOTX_SHADOW_INT32;
     attr_temperature.callback = NULL;
 
     IOT_Shadow_DeleteAttribute(h_shadow, &attr_switch);
