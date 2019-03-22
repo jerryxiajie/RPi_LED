@@ -97,75 +97,6 @@ static int user_service_request_event_handler(const int devid, const char *servi
         const char *request, const int request_len,
         char **response, int *response_len)
 {
-    int contrastratio = 0, to_cloud = 0, led_status = 0;
-    cJSON *root = NULL, *item_transparency = NULL, *item_from_cloud = NULL;
-    EXAMPLE_TRACE("Service Request Received, Devid: %d, Service ID: %.*s, Payload: %s", devid, serviceid_len,
-                  serviceid,
-                  request);
-
-    /* Parse Root */
-    root = cJSON_Parse(request);
-    if (root == NULL || !cJSON_IsObject(root)) {
-        EXAMPLE_TRACE("JSON Parse Error");
-        return -1;
-    }
-
-    if (strlen("custom") == serviceid_len && memcmp("custom", serviceid, serviceid_len) == 0) {
-        /* Parse Item */
-        const char *response_fmt = "{\"Contrastratio\":%d}";
-        item_transparency = cJSON_GetObjectItem(root, "transparency");
-        if (item_transparency == NULL || !cJSON_IsNumber(item_transparency)) {
-            cJSON_Delete(root);
-            return -1;
-        }
-        EXAMPLE_TRACE("transparency: %d", item_transparency->valueint);
-        
-	led_status = item_transparency->valueint;
-	if(led_status == 1)
-	{
-		system("echo 1 > /sys/class/gpio/gpio16/value");
-	}
-	else
-	{
-		system("echo 0 > /sys/class/gpio/gpio16/value");
-	}
-
-
-	contrastratio = item_transparency->valueint + 1;
-
-        /* Send Service Response To Cloud */
-        *response_len = strlen(response_fmt) + 10 + 1;
-        *response = (char *)HAL_Malloc(*response_len);
-        if (*response == NULL) {
-            EXAMPLE_TRACE("Memory Not Enough");
-            return -1;
-        }
-        memset(*response, 0, *response_len);
-        HAL_Snprintf(*response, *response_len, response_fmt, contrastratio);
-        *response_len = strlen(*response);
-    } else if (strlen("SyncService") == serviceid_len && memcmp("SyncService", serviceid, serviceid_len) == 0) {
-        /* Parse Item */
-        const char *response_fmt = "{\"ToCloud\":%d}";
-        item_from_cloud = cJSON_GetObjectItem(root, "FromCloud");
-        if (item_from_cloud == NULL || !cJSON_IsNumber(item_from_cloud)) {
-            cJSON_Delete(root);
-            return -1;
-        }
-        EXAMPLE_TRACE("FromCloud: %d", item_from_cloud->valueint);
-        to_cloud = item_from_cloud->valueint + 1;
-
-        /* Send Service Response To Cloud */
-        *response_len = strlen(response_fmt) + 10 + 1;
-        *response = (char *)HAL_Malloc(*response_len);
-        if (*response == NULL) {
-            EXAMPLE_TRACE("Memory Not Enough");
-            return -1;
-        }
-        memset(*response, 0, *response_len);
-        HAL_Snprintf(*response, *response_len, response_fmt, to_cloud);
-        *response_len = strlen(*response);
-    }
-    cJSON_Delete(root);
 
     return 0;
 }
@@ -396,16 +327,6 @@ static int user_initialized(const int devid)
   */
 static int user_fota_event_handler(int type, const char *version)
 {
-    char buffer[128] = {0};
-    int buffer_length = 128;
-    user_example_ctx_t *user_example_ctx = user_example_get_ctx();
-
-    if (type == 0) {
-        EXAMPLE_TRACE("New Firmware Version: %s", version);
-
-        IOT_Linkkit_Query(user_example_ctx->master_devid, ITM_MSG_QUERY_FOTA_DATA, (unsigned char *)buffer, buffer_length);
-    }
-
     return 0;
 }
 
@@ -417,20 +338,6 @@ static int user_fota_event_handler(int type, const char *version)
 static int user_cota_event_handler(int type, const char *config_id, int config_size, const char *get_type,
                                    const char *sign, const char *sign_method, const char *url)
 {
-    char buffer[128] = {0};
-    int buffer_length = 128;
-    user_example_ctx_t *user_example_ctx = user_example_get_ctx();
-
-    if (type == 0) {
-        EXAMPLE_TRACE("New Config ID: %s", config_id);
-        EXAMPLE_TRACE("New Config Size: %d", config_size);
-        EXAMPLE_TRACE("New Config Type: %s", get_type);
-        EXAMPLE_TRACE("New Config Sign: %s", sign);
-        EXAMPLE_TRACE("New Config Sign Method: %s", sign_method);
-        EXAMPLE_TRACE("New Config URL: %s", url);
-
-        IOT_Linkkit_Query(user_example_ctx->master_devid, ITM_MSG_QUERY_COTA_DATA, (unsigned char *)buffer, buffer_length);
-    }
 
     return 0;
 }
@@ -469,11 +376,8 @@ void user_post_property(int id, int status)
 		property_payload = "{\"LightSwitch2\":0}";
     }
 
-    //property_payload = "{\"LightSwitch1\":1}";
-
     res = IOT_Linkkit_Report(user_example_ctx->master_devid, ITM_MSG_POST_PROPERTY,
                              (unsigned char *)property_payload, strlen(property_payload));
-
     EXAMPLE_TRACE("Post Property Message ID: %d", res);
 }
 
@@ -523,12 +427,6 @@ void user_post_temp_property(void)
     }
     memset(response,0,length);
     HAL_Snprintf(response, length, property_payload, temperature);
-    
-//    printf("\n length = %d payload_lenght = %d  float_length = %d \n",length,strlen(property_payload),sizeof(float));
-//    printf("\n response = %s \n",response); 
-//    printf("\n response_length = %d \n",strlen(response));
-
-    //property_payload = "{\"temperature\": response}";
 
     res = IOT_Linkkit_Report(user_example_ctx->master_devid, ITM_MSG_POST_PROPERTY,
                              (unsigned char *)response, length);
@@ -539,88 +437,24 @@ void user_post_temp_property(void)
 
 void user_post_event(void)
 {
-    static int example_index = 0;
-    int res = 0;
-    user_example_ctx_t *user_example_ctx = user_example_get_ctx();
-    char *event_id = "Error";
-    char *event_payload = "NULL";
 
-    if (example_index == 0) {
-        /* Normal Example */
-        event_payload = "{\"ErrorCode\":0}";
-        example_index++;
-    } else if (example_index == 1) {
-        /* Wrong Property ID */
-        event_payload = "{\"ErrorCodexxx\":0}";
-        example_index++;
-    } else if (example_index == 2) {
-        /* Wrong Value Format */
-        event_payload = "{\"ErrorCode\":\"test\"}";
-        example_index++;
-    } else if (example_index == 3) {
-        /* Wrong Value Range */
-        event_payload = "{\"ErrorCode\":10}";
-        example_index++;
-    } else if (example_index == 4) {
-        /* Wrong Value Range */
-        event_payload = "\"hello world\"";
-        example_index++;
-    } else if (example_index == 5) {
-        /* Wrong Json Format */
-        event_payload = "hello world";
-        example_index = 0;
-    }
-
-    res = IOT_Linkkit_TriggerEvent(user_example_ctx->master_devid, event_id, strlen(event_id),
-                                   event_payload, strlen(event_payload));
-    EXAMPLE_TRACE("Post Event Message ID: %d", res);
 }
 
 void user_deviceinfo_update(void)
 {
-    int res = 0;
-    user_example_ctx_t *user_example_ctx = user_example_get_ctx();
-    char *device_info_update = "[{\"attrKey\":\"abc\",\"attrValue\":\"hello,world\"}]";
 
-    res = IOT_Linkkit_Report(user_example_ctx->master_devid, ITM_MSG_DEVICEINFO_UPDATE,
-                             (unsigned char *)device_info_update, strlen(device_info_update));
-    EXAMPLE_TRACE("Device Info Update Message ID: %d", res);
 }
 
 void user_deviceinfo_delete(void)
 {
-    int res = 0;
-    user_example_ctx_t *user_example_ctx = user_example_get_ctx();
-    char *device_info_delete = "[{\"attrKey\":\"abc\"}]";
-
-    res = IOT_Linkkit_Report(user_example_ctx->master_devid, ITM_MSG_DEVICEINFO_DELETE,
-                             (unsigned char *)device_info_delete, strlen(device_info_delete));
-    EXAMPLE_TRACE("Device Info Delete Message ID: %d", res);
+ 
 }
 
 void user_post_raw_data(void)
 {
-    int res = 0;
-    user_example_ctx_t *user_example_ctx = user_example_get_ctx();
-    unsigned char raw_data[7] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
 
-    res = IOT_Linkkit_Report(user_example_ctx->master_devid, ITM_MSG_POST_RAW_DATA,
-                             raw_data, 7);
-    EXAMPLE_TRACE("Post Raw Data Message ID: %d", res);
 }
 
-/*
-static int user_master_dev_available(void)
-{
-    user_example_ctx_t *user_example_ctx = user_example_get_ctx();
-
-    if (user_example_ctx->cloud_connected && user_example_ctx->master_initialized) {
-        return 1;
-    }
-
-    return 0;
-}
-*/
 
 void set_iotx_info()
 {
@@ -683,13 +517,8 @@ int linkkit_main(void *paras)
     memcpy(master_meta_info.device_secret, DEVICE_SECRET, strlen(DEVICE_SECRET));
 
     /* Choose Login Server, domain should be configured before IOT_Linkkit_Open() */
-#if USE_CUSTOME_DOMAIN
-    IOT_Ioctl(IOTX_IOCTL_SET_MQTT_DOMAIN, (void *)CUSTOME_DOMAIN_MQTT);
-    IOT_Ioctl(IOTX_IOCTL_SET_HTTP_DOMAIN, (void *)CUSTOME_DOMAIN_HTTP);
-#else
     int domain_type = IOTX_CLOUD_REGION_SHANGHAI;
     IOT_Ioctl(IOTX_IOCTL_SET_DOMAIN, (void *)&domain_type);
-#endif
 
     /* Choose Login Method */
     int dynamic_register = 0;
@@ -720,14 +549,11 @@ int linkkit_main(void *paras)
     system("echo 0 > /sys/class/gpio/gpio12/value");
     user_post_property(2,0);
     IOT_Linkkit_Yield(USER_EXAMPLE_YIELD_TIMEOUT_MS);
-//    system("echo 16 > /sys/class/gpio/export");
-//    system("echo out > /sys/class/gpio/gpio16/direction");
-//    time_begin_sec = user_update_sec();
+
     while (1) {
+
         IOT_Linkkit_Yield(USER_EXAMPLE_YIELD_TIMEOUT_MS);
 
-//	user_post_property();
-//	user_post_temp_property();
 	HAL_SleepMs(10);
 	cnt++;
 	if(cnt == 100)
