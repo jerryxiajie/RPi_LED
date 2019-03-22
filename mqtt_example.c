@@ -149,8 +149,8 @@ int mqtt_client(void)
 //    iotx_mqtt_param_t mqtt_params;
     iotx_shadow_para_t shadow_para;
     char buf[1024];
-    int32_t LightSwitch1 = 0, LightSwitch2 = 0, temperature = 0;
-    iotx_shadow_attr_t attr_lightswitch1, attr_lightswitch2, attr_temperature;
+    int32_t LightSwitch1 = 0, LightSwitch2 = 0, temperature = 0, switchs = 0;
+    iotx_shadow_attr_t attr_lightswitch1, attr_lightswitch2, attr_temperature, attr_switch;
 
     if (0 != IOT_SetupConnInfo(PRODUCT_KEY, DEVICE_NAME, DEVICE_SECRET, (void **)&puser_info)) {
         EXAMPLE_TRACE("AUTH request failed!");
@@ -179,6 +179,7 @@ int mqtt_client(void)
     h_shadow = IOT_Shadow_Construct(&shadow_para);
 
  	memset(&attr_lightswitch1, 0, sizeof(iotx_shadow_attr_t));
+ 	memset(&attr_switch, 0, sizeof(iotx_shadow_attr_t));
     memset(&attr_lightswitch2, 0, sizeof(iotx_shadow_attr_t));
     memset(&attr_temperature, 0, sizeof(iotx_shadow_attr_t));
 
@@ -189,6 +190,15 @@ int mqtt_client(void)
     attr_lightswitch1.pattr_data = &LightSwitch1;
     attr_lightswitch1.attr_type = IOTX_SHADOW_INT32;
     attr_lightswitch1.callback = _device_shadow_cb_light1;
+
+
+    attr_switch.attr_type = IOTX_SHADOW_INT32;
+    attr_switch.mode = IOTX_SHADOW_RW;
+    attr_switch.pattr_name = "switch";
+    attr_switch.pattr_data = &switchs;
+    attr_switch.attr_type = IOTX_SHADOW_INT32;
+    attr_switch.callback = NULL;
+
 
     attr_lightswitch2.attr_type = IOTX_SHADOW_INT32;
     attr_lightswitch2.mode = IOTX_SHADOW_RW;
@@ -205,12 +215,16 @@ int mqtt_client(void)
     attr_lightswitch1.attr_type = IOTX_SHADOW_INT32;
     attr_temperature.callback = NULL;
 
+    IOT_Shadow_DeleteAttribute(h_shadow, &attr_temperature);
+    IOT_Shadow_DeleteAttribute(h_shadow, &attr_temperature);
+    
+
     /* Register the attribute */
     /* Note that you must register the attribute you want to synchronize with cloud
      * before calling IOT_Shadow_Pull() */
     IOT_Shadow_RegisterAttribute(h_shadow, &attr_lightswitch1);
     IOT_Shadow_RegisterAttribute(h_shadow, &attr_lightswitch2);
-    IOT_Shadow_RegisterAttribute(h_shadow, &attr_temperature);
+   // IOT_Shadow_RegisterAttribute(h_shadow, &attr_temperature);
 
     /* synchronize the device shadow with device shadow cloud */
     IOT_Shadow_Pull(h_shadow);
@@ -219,7 +233,7 @@ int mqtt_client(void)
 
     /* Format the attribute data */
     IOT_Shadow_PushFormat_Init(h_shadow, &format, buf, 1024);
-    IOT_Shadow_PushFormat_Add(h_shadow, &format, &attr_temperature);
+//    IOT_Shadow_PushFormat_Add(h_shadow, &format, &attr_temperature);
     IOT_Shadow_PushFormat_Add(h_shadow, &format, &attr_lightswitch1);
     IOT_Shadow_PushFormat_Add(h_shadow, &format, &attr_lightswitch2);
     IOT_Shadow_PushFormat_Finalize(h_shadow, &format);
@@ -238,7 +252,7 @@ int mqtt_client(void)
     } while (1);
 
     /* Delete the two attributes */
-    IOT_Shadow_DeleteAttribute(h_shadow, &attr_temperature);
+  //  IOT_Shadow_DeleteAttribute(h_shadow, &attr_temperature);
     IOT_Shadow_DeleteAttribute(h_shadow, &attr_lightswitch1);
     IOT_Shadow_DeleteAttribute(h_shadow, &attr_lightswitch2);
 
