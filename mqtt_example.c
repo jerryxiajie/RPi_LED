@@ -257,6 +257,8 @@ int mqtt_client(void)
 
  //   HAL_SleepMs(1000);
 
+    printf("\n---------------  Test ------------------\n");
+
     do {
 
     //    IOT_MQTT_Yield(h_shadow, 200);
