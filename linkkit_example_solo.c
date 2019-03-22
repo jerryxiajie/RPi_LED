@@ -730,7 +730,7 @@ int linkkit_main(void *paras)
 //	user_post_temp_property();
 	HAL_SleepMs(10);
 	cnt++;
-	if(cnt == 1000)
+	if(cnt == 100)
 	{
 		user_post_temp_property();
 		cnt = 0;
