@@ -204,7 +204,7 @@ int mqtt_client(void)
     attr_lightswitch2.mode = IOTX_SHADOW_RW;
     attr_lightswitch2.pattr_name = "switch2";
     attr_lightswitch2.pattr_data = &LightSwitch2;
-    attr_lightswitch1.attr_type = IOTX_SHADOW_INT32;
+    attr_lightswitch2.attr_type = IOTX_SHADOW_INT32;
     attr_lightswitch2.callback = _device_shadow_cb_light2;
 
     /* Initialize the @temperature attribute */
@@ -212,10 +212,10 @@ int mqtt_client(void)
     attr_temperature.mode = IOTX_SHADOW_READONLY;
     attr_temperature.pattr_name = "temperature";
     attr_temperature.pattr_data = &temperature;
-    attr_lightswitch1.attr_type = IOTX_SHADOW_INT32;
+    attr_temperature.attr_type = IOTX_SHADOW_INT32;
     attr_temperature.callback = NULL;
 
-    IOT_Shadow_DeleteAttribute(h_shadow, &attr_temperature);
+    IOT_Shadow_DeleteAttribute(h_shadow, &attr_switch);
     IOT_Shadow_DeleteAttribute(h_shadow, &attr_temperature);
     
 
