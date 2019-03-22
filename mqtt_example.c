@@ -163,7 +163,7 @@ int mqtt_client(void)
 //    iotx_mqtt_param_t mqtt_params;
     iotx_shadow_para_t shadow_para;
     char buf[1024];
-    int32_t LightSwitch1 = 0, LightSwitch2 = 0, temperature = 0, light = 0;
+    int32_t LightSwitch1 = 1, LightSwitch2 = 0, temperature = 0, light = 0;
     iotx_shadow_attr_t attr_lightswitch1, attr_lightswitch2, attr_temperature, attr_switch;
 
     if (0 != IOT_SetupConnInfo(PRODUCT_KEY, DEVICE_NAME, DEVICE_SECRET, (void **)&puser_info)) {
@@ -227,11 +227,7 @@ int mqtt_client(void)
     attr_temperature.pattr_name = "temperature";
     attr_temperature.pattr_data = &temperature;
 //    attr_temperature.attr_type = IOTX_SHADOW_INT32;
-    attr_temperature.callback = NULL;
-
-    IOT_Shadow_DeleteAttribute(h_shadow, &attr_switch);
-    IOT_Shadow_DeleteAttribute(h_shadow, &attr_temperature);
-    
+    attr_temperature.callback = NULL;    
 
     /* Register the attribute */
     /* Note that you must register the attribute you want to synchronize with cloud
@@ -247,10 +243,14 @@ int mqtt_client(void)
 
     /* Format the attribute data */
     IOT_Shadow_PushFormat_Init(h_shadow, &format, buf, 1024);
-//    IOT_Shadow_PushFormat_Add(h_shadow, &format, &attr_temperature);
     IOT_Shadow_PushFormat_Add(h_shadow, &format, &attr_lightswitch1);
     IOT_Shadow_PushFormat_Add(h_shadow, &format, &attr_lightswitch2);
     IOT_Shadow_PushFormat_Finalize(h_shadow, &format);
+
+
+    IOT_Shadow_DeleteAttribute(h_shadow, &attr_switch);
+    IOT_Shadow_DeleteAttribute(h_shadow, &attr_temperature);
+
 
     /* Update attribute data */
     IOT_Shadow_Push(h_shadow, format.buf, format.offset, 10);
