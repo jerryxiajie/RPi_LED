@@ -158,124 +158,7 @@ static int user_property_set_event_handler(const int devid, const char *request,
 static int user_property_get_event_handler(const int devid, const char *request, const int request_len, char **response,
         int *response_len)
 {
-    cJSON *request_root = NULL, *item_propertyid = NULL;
-    cJSON *response_root = NULL;
-    int index = 0;
-    EXAMPLE_TRACE("Property Get Received, Devid: %d, Request: %s", devid, request);
-
-    /* Parse Request */
-    request_root = cJSON_Parse(request);
-    if (request_root == NULL || !cJSON_IsArray(request_root)) {
-        EXAMPLE_TRACE("JSON Parse Error");
-        return -1;
-    }
-
-    /* Prepare Response */
-    response_root = cJSON_CreateObject();
-    if (response_root == NULL) {
-        EXAMPLE_TRACE("No Enough Memory");
-        cJSON_Delete(request_root);
-        return -1;
-    }
-
-    for (index = 0; index < cJSON_GetArraySize(request_root); index++) {
-        item_propertyid = cJSON_GetArrayItem(request_root, index);
-        if (item_propertyid == NULL || !cJSON_IsString(item_propertyid)) {
-            EXAMPLE_TRACE("JSON Parse Error");
-            cJSON_Delete(request_root);
-            cJSON_Delete(response_root);
-            return -1;
-        }
-
-        EXAMPLE_TRACE("Property ID, index: %d, Value: %s", index, item_propertyid->valuestring);
-
-        if (strcmp("WIFI_Tx_Rate", item_propertyid->valuestring) == 0) {
-            cJSON_AddNumberToObject(response_root, "WIFI_Tx_Rate", 1111);
-        } else if (strcmp("WIFI_Rx_Rate", item_propertyid->valuestring) == 0) {
-            cJSON_AddNumberToObject(response_root, "WIFI_Rx_Rate", 2222);
-        } else if (strcmp("RGBColor", item_propertyid->valuestring) == 0) {
-            cJSON *item_rgbcolor = cJSON_CreateObject();
-            if (item_rgbcolor == NULL) {
-                cJSON_Delete(request_root);
-                cJSON_Delete(response_root);
-                return -1;
-            }
-            cJSON_AddNumberToObject(item_rgbcolor, "Red", 100);
-            cJSON_AddNumberToObject(item_rgbcolor, "Green", 100);
-            cJSON_AddNumberToObject(item_rgbcolor, "Blue", 100);
-            cJSON_AddItemToObject(response_root, "RGBColor", item_rgbcolor);
-        } else if (strcmp("HSVColor", item_propertyid->valuestring) == 0) {
-            cJSON *item_hsvcolor = cJSON_CreateObject();
-            if (item_hsvcolor == NULL) {
-                cJSON_Delete(request_root);
-                cJSON_Delete(response_root);
-                return -1;
-            }
-            cJSON_AddNumberToObject(item_hsvcolor, "Hue", 50);
-            cJSON_AddNumberToObject(item_hsvcolor, "Saturation", 50);
-            cJSON_AddNumberToObject(item_hsvcolor, "Value", 50);
-            cJSON_AddItemToObject(response_root, "HSVColor", item_hsvcolor);
-        } else if (strcmp("HSLColor", item_propertyid->valuestring) == 0) {
-            cJSON *item_hslcolor = cJSON_CreateObject();
-            if (item_hslcolor == NULL) {
-                cJSON_Delete(request_root);
-                cJSON_Delete(response_root);
-                return -1;
-            }
-            cJSON_AddNumberToObject(item_hslcolor, "Hue", 70);
-            cJSON_AddNumberToObject(item_hslcolor, "Saturation", 70);
-            cJSON_AddNumberToObject(item_hslcolor, "Lightness", 70);
-            cJSON_AddItemToObject(response_root, "HSLColor", item_hslcolor);
-        } else if (strcmp("WorkMode", item_propertyid->valuestring) == 0) {
-            cJSON_AddNumberToObject(response_root, "WorkMode", 4);
-        } else if (strcmp("NightLightSwitch", item_propertyid->valuestring) == 0) {
-            cJSON_AddNumberToObject(response_root, "NightLightSwitch", 1);
-        } else if (strcmp("Brightness", item_propertyid->valuestring) == 0) {
-            cJSON_AddNumberToObject(response_root, "Brightness", 30);
-        } else if (strcmp("LightSwitch", item_propertyid->valuestring) == 0) {
-            cJSON_AddNumberToObject(response_root, "LightSwitch", 1);
-        } else if (strcmp("ColorTemperature", item_propertyid->valuestring) == 0) {
-            cJSON_AddNumberToObject(response_root, "ColorTemperature", 2800);
-        } else if (strcmp("PropertyCharacter", item_propertyid->valuestring) == 0) {
-            cJSON_AddStringToObject(response_root, "PropertyCharacter", "testprop");
-        } else if (strcmp("Propertypoint", item_propertyid->valuestring) == 0) {
-            cJSON_AddNumberToObject(response_root, "Propertypoint", 50);
-        } else if (strcmp("LocalTimer", item_propertyid->valuestring) == 0) {
-            cJSON *array_localtimer = cJSON_CreateArray();
-            if (array_localtimer == NULL) {
-                cJSON_Delete(request_root);
-                cJSON_Delete(response_root);
-                return -1;
-            }
-
-            cJSON *item_localtimer = cJSON_CreateObject();
-            if (item_localtimer == NULL) {
-                cJSON_Delete(request_root);
-                cJSON_Delete(response_root);
-                cJSON_Delete(array_localtimer);
-                return -1;
-            }
-            cJSON_AddStringToObject(item_localtimer, "Timer", "10 11 * * * 1 2 3 4 5");
-            cJSON_AddNumberToObject(item_localtimer, "Enable", 1);
-            cJSON_AddNumberToObject(item_localtimer, "IsValid", 1);
-            cJSON_AddItemToArray(array_localtimer, item_localtimer);
-            cJSON_AddItemToObject(response_root, "LocalTimer", array_localtimer);
-        }
-    }
-    cJSON_Delete(request_root);
-
-    *response = cJSON_PrintUnformatted(response_root);
-    if (*response == NULL) {
-        EXAMPLE_TRACE("No Enough Memory");
-        cJSON_Delete(response_root);
-        return -1;
-    }
-    cJSON_Delete(response_root);
-    *response_len = strlen(*response);
-
-    EXAMPLE_TRACE("Property Get Response: %s", *response);
-
-    return SUCCESS_RETURN;
+    return 0;
 }
 
 static int user_report_reply_event_handler(const int devid, const int msgid, const int code, const char *reply,
@@ -342,7 +225,7 @@ static int user_cota_event_handler(int type, const char *config_id, int config_s
     return 0;
 }
 
-/*static uint64_t user_update_sec(void)
+static uint64_t user_update_sec(void)
 {
     static uint64_t time_start_ms = 0;
 
@@ -352,7 +235,7 @@ static int user_cota_event_handler(int type, const char *config_id, int config_s
 
     return (HAL_UptimeMs() - time_start_ms) / 1000;
 }
-*/
+
 void user_post_property(int id, int status)
 {
 //    static int example_index = 0;
@@ -468,8 +351,9 @@ static int max_running_seconds = 0;
 int linkkit_main(void *paras)
 {
 
-//    uint64_t                        time_prev_sec = 0, time_now_sec = 0;
-//    uint64_t                        time_begin_sec = 0;
+    uint64_t                        time_prev_sec = 0, time_now_sec = 0;
+    uint64_t                        time_begin_sec = 0;
+    uint64_t			    max_running_seconds = 86400;
     int                             res = 0;
     int cnt = 0;
     iotx_linkkit_dev_meta_info_t    master_meta_info;
@@ -544,24 +428,29 @@ int linkkit_main(void *paras)
 
     system("echo 0 > /sys/class/gpio/gpio16/value");
     user_post_property(1,0);
-    IOT_Linkkit_Yield(USER_EXAMPLE_YIELD_TIMEOUT_MS);
     
     system("echo 0 > /sys/class/gpio/gpio12/value");
     user_post_property(2,0);
-    IOT_Linkkit_Yield(USER_EXAMPLE_YIELD_TIMEOUT_MS);
+
+    time_begin_sec = user_update_sec();
 
     while (1) {
 
         IOT_Linkkit_Yield(USER_EXAMPLE_YIELD_TIMEOUT_MS);
 
-	HAL_SleepMs(10);
-	cnt++;
-	if(cnt == 100)
-	{
-		user_post_temp_property();
-		cnt = 0;
+	time_now_sec = user_update_sec();
+	if(time_prev_sec == time_now_sec){
+		continue;
+	}
+	if (max_running_seconds && (time_now_sec - time_begin_sec > max_running_seconds)) {
+            EXAMPLE_TRACE("Example Run for Over %d Seconds, Break Loop!\n", max_running_seconds);
+            break;
 	}
 
+	if(time_now_sec - time_prev_sec > 60){
+		user_post_temp_property();
+		time_prev_sec = time_now_sec;
+	}
     }
 
     IOT_Linkkit_Close(user_example_ctx->master_devid);
