@@ -283,10 +283,7 @@ float get_temperature(void)
                 printf("File open success! \n");
         }
 
-        if(fread(file_buffer,128,1,file_fd) == 0){
-		printf("Read temperature failed.\n");
-		exit(-1);
-	}
+        fread(file_buffer,128,1,file_fd) == 0);
         fclose(file_fd);
         i = 0;
         while(file_buffer[i++]  != 't');
