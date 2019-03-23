@@ -122,12 +122,18 @@ static int user_property_set_event_handler(const int devid, const char *request,
 	item_light = cJSON_GetObjectItem(root,"LightSwitch2");
 	if(item_light->valueint == 1)
 	{
-        	system("echo 1 > /sys/class/gpio/gpio12/value");
+        	if(system("echo 1 > /sys/class/gpio/gpio12/value") == 0){
+			printf("Open green led failed \n");
+			return 0;
+		}
 		user_post_property(2,1);
     	}
     	else
     	{
-        	system("echo 0 > /sys/class/gpio/gpio12/value");
+		if(system("echo 0 > /sys/class/gpio/gpio12/value") == 0){
+			printf("Close green Led failed \n");
+			return 0;
+		}
 		user_post_property(2,0);
     	}
 
@@ -136,12 +142,18 @@ static int user_property_set_event_handler(const int devid, const char *request,
     {
 	if(item_light->valueint == 1)
 	{
-        	system("echo 1 > /sys/class/gpio/gpio16/value");
+		if(system("echo 1 > /sys/class/gpio/gpio16/value") == 0){
+			printf("Open red led failed \n");
+			return 0;	
+		}
 		user_post_property(1,1);
     	}
     	else
     	{
-        	system("echo 0 > /sys/class/gpio/gpio16/value");
+		if(system("echo 0 > /sys/class/gpio/gpio16/value") == 0){
+			printf("Close red led failed \n");
+			return 0;	
+		}
 		user_post_property(1,0);
     	}
     }
@@ -283,7 +295,10 @@ float get_temperature(void)
                 printf("File open success! \n");
         }
 
-        fread(file_buffer,128,1,file_fd);
+        if(fread(file_buffer,128,1,file_fd) == 0){
+		printf("Read temperature failed.\n");
+		exit(-1);
+	}
         fclose(file_fd);
         i = 0;
         while(file_buffer[i++]  != 't');
@@ -347,15 +362,13 @@ void set_iotx_info()
     HAL_SetDeviceSecret(DEVICE_SECRET);
 }
 
-static int max_running_seconds = 0;
+static int max_running_seconds = 86400;
 int linkkit_main(void *paras)
 {
 
     uint64_t                        time_prev_sec = 0, time_now_sec = 0;
     uint64_t                        time_begin_sec = 0;
-    uint64_t			    max_running_seconds = 86400;
     int                             res = 0;
-    int cnt = 0;
     iotx_linkkit_dev_meta_info_t    master_meta_info;
     user_example_ctx_t             *user_example_ctx = user_example_get_ctx();
 #if defined(__UBUNTU_SDK_DEMO__)
@@ -426,14 +439,19 @@ int linkkit_main(void *paras)
         return -1;
     }    
 
-    system("echo 0 > /sys/class/gpio/gpio16/value");
+    if(system("echo 0 > /sys/class/gpio/gpio16/value") == 0){
+	printf("Close gpio16 failed.\n");
+	return 0;
+    }
     user_post_property(1,0);
     
-    system("echo 0 > /sys/class/gpio/gpio12/value");
+    if(system("echo 0 > /sys/class/gpio/gpio12/value") == 0){
+    	printf("Close gpio16 failed.\n");
+	return 0;
+    }
     user_post_property(2,0);
 
     time_begin_sec = user_update_sec();
-
     while (1) {
 
         IOT_Linkkit_Yield(USER_EXAMPLE_YIELD_TIMEOUT_MS);
