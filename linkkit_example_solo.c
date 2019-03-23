@@ -122,18 +122,12 @@ static int user_property_set_event_handler(const int devid, const char *request,
 	item_light = cJSON_GetObjectItem(root,"LightSwitch2");
 	if(item_light->valueint == 1)
 	{
-        	if(system("echo 1 > /sys/class/gpio/gpio12/value") == 0){
-			printf("Open green led failed \n");
-			return 0;
-		}
+        	system("echo 1 > /sys/class/gpio/gpio12/value");
 		user_post_property(2,1);
     	}
     	else
     	{
-		if(system("echo 0 > /sys/class/gpio/gpio12/value") == 0){
-			printf("Close green Led failed \n");
-			return 0;
-		}
+		system("echo 0 > /sys/class/gpio/gpio12/value");
 		user_post_property(2,0);
     	}
 
@@ -142,18 +136,12 @@ static int user_property_set_event_handler(const int devid, const char *request,
     {
 	if(item_light->valueint == 1)
 	{
-		if(system("echo 1 > /sys/class/gpio/gpio16/value") == 0){
-			printf("Open red led failed \n");
-			return 0;	
-		}
+		system("echo 1 > /sys/class/gpio/gpio16/value");
 		user_post_property(1,1);
     	}
     	else
     	{
-		if(system("echo 0 > /sys/class/gpio/gpio16/value") == 0){
-			printf("Close red led failed \n");
-			return 0;	
-		}
+		system("echo 0 > /sys/class/gpio/gpio16/value");
 		user_post_property(1,0);
     	}
     }
@@ -439,16 +427,10 @@ int linkkit_main(void *paras)
         return -1;
     }    
 
-    if(system("echo 0 > /sys/class/gpio/gpio16/value") == 0){
-	printf("Close gpio16 failed.\n");
-	return 0;
-    }
+    system("echo 0 > /sys/class/gpio/gpio16/value");
     user_post_property(1,0);
     
-    if(system("echo 0 > /sys/class/gpio/gpio12/value") == 0){
-    	printf("Close gpio16 failed.\n");
-	return 0;
-    }
+    system("echo 0 > /sys/class/gpio/gpio12/value");
     user_post_property(2,0);
 
     time_begin_sec = user_update_sec();
